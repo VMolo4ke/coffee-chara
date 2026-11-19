@@ -8,6 +8,8 @@
 	let activeCup = $state<string | null>(null);
 	let activeView = $state<CameraView>('default');
 
+    let lightAngle = $state(45);
+
 	const lidColors = [
 		{ name: 'Белая', value: '#e5e5e5' },
 		{ name: 'Чёрная', value: '#222222' },
@@ -16,7 +18,7 @@
 	];
 
 	const cupColors = [
-		{ name: 'Крафт (оригинал)', value: null, preview: '#5c3a21' },
+		{ name: 'Крафт', value: null, preview: '#5c3a21' },
 		{ name: 'Сливочный', value: '#f4ece1', preview: '#f4ece1' },
 		{ name: 'Терракота', value: '#c85a32', preview: '#c85a32' },
 		{ name: 'Графит', value: '#33373d', preview: '#33373d' },
@@ -48,6 +50,12 @@
 		activeView = view;
 		manager?.setView(view);
 	}
+
+    function handleLightChange(e: Event) {
+        const value = Number((e.target as HTMLInputElement).value);
+        lightAngle = value;
+        manager?.setLightAngle(value);
+    }
 </script>
 
 <main class="app">
@@ -59,6 +67,21 @@
 				<h1>Coffee Chara</h1>
 				<p>3D-конфигуратор стаканчика</p>
 			</div>
+
+            <section class="panel">
+                <div class="slider-header">
+                    <h2>Освещение</h2>
+                    <span>{lightAngle}°</span>
+                </div>
+                <input
+                    type="range"
+                    min="0"
+                    max="360"
+                    value={lightAngle}
+                    oninput={handleLightChange}
+                    class="slider"
+                />
+            </section>
 
 			<div class="panel views">
 				<button class:active={activeView === 'default'} onclick={() => selectView('default')}>

@@ -12,6 +12,8 @@ export async function loadCoffeeCup(url: string): Promise<THREE.Group> {
   const maxDim = Math.max(size.x, size.y, size.z);
   const scale = 2 / maxDim;
 
+  model.rotation.y = THREE.MathUtils.degToRad(75);
+
   model.scale.setScalar(scale);
   model.position.sub(center.multiplyScalar(scale));
 

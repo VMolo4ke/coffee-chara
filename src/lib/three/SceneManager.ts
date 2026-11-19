@@ -9,6 +9,7 @@ export class SceneManager {
   private scene = new THREE.Scene();
   private camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
+  private dirLight: THREE.DirectionalLight;
   private controls: OrbitControls;
   private resizeObserver: ResizeObserver;
   private animationFrameId = 0;
@@ -16,7 +17,7 @@ export class SceneManager {
   private cupMeshes: THREE.Mesh[] = [];
   private lidMeshes: THREE.Mesh[] = [];
   private originalCupMaps = new Map<THREE.Mesh, THREE.Texture | null>();
-  private targetCameraPos = new THREE.Vector3(0, 1.2, 4);
+  private targetCameraPos = new THREE.Vector3(0, 2.5, 6);
 
   constructor(private container: HTMLElement) {
     const width = container.clientWidth;
@@ -37,10 +38,12 @@ export class SceneManager {
     this.controls.maxDistance = 8;
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 2);
-    dirLight.position.set(3, 5, 4);
-    dirLight.castShadow = true;
-    this.scene.add(ambientLight, dirLight);
+    this.dirLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    this.dirLight.castShadow = true;
+    this.dirLight.shadow.mapSize.set(1024, 1024);
+    this.setLightAngle(45);
+
+    this.scene.add(ambientLight, this.dirLight);
 
     const floor = new THREE.Mesh(
       new THREE.CircleGeometry(3, 64),
@@ -102,6 +105,16 @@ export class SceneManager {
     if (view === "default") this.targetCameraPos.set(0, 1.2, 4);
     if (view === "top") this.targetCameraPos.set(0, 3.8, 1.2);
     if (view === "detail") this.targetCameraPos.set(1.8, 0.3, 2.2);
+  }
+
+  setLightAngle(degrees: number) {
+    const rad = THREE.MathUtils.degToRad(degrees);
+    const radius = 5;
+    this.dirLight.position.set(
+      Math.cos(rad) * radius,
+      5,
+      Math.sin(rad) * radius,
+    );
   }
 
   private onResize() {
